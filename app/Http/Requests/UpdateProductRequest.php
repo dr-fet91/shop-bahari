@@ -19,10 +19,25 @@ class UpdateProductRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
+    public function rules()
+    {
+        $productId = $this->route('product');
+        $productId = $productId->id;
+        return [
+            'name' => 'nullable|string|unique:products,name,' . $productId . '|max:255',
+            'title' => 'nullable|string|unique:products,title,' . $productId . '|max:255',
+            'image' => 'nullable|url',
+            'price' => 'nullable|numeric|min:0',
+        ];
+    }
+
+    public function messages()
     {
         return [
-            //
+            'name.unique' => 'نام محصول باید یکتا باشد.',
+            'title.unique' => 'عنوان محصول باید یکتا باشد.',
+            'price.numeric' => 'قیمت باید عدد باشد.',
+            'price.min' => 'قیمت باید مثبت باشد.',
         ];
     }
 }

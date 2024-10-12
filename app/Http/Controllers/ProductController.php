@@ -16,11 +16,33 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $perPage = $request->per_page;
-        $products = Product::paginate($perPage);
-
+        $perPage = $request->filled('per_page') && is_numeric($request->input('per_page')) ? $request->input('per_page') : 10;
+        $validSortByOptions = ['name', 'title', 'price', 'created_at', 'updated_at'];
+        $sortBy = $request->filled('sortBy') && in_array($request->input('sortBy'), $validSortByOptions)
+            ? $request->input('sortBy')
+            : 'title';
+        $validSortOrderOptions = ['ASC', 'DESC'];
+        $sortOrder = $request->filled('sortOrder') && in_array($request->input('sortOrder'), $validSortOrderOptions)
+            ? $request->input('sortOrder')
+            : 'DESC';
+        $search = $request->filled('search') ? $request->input('search') : '';
+        $addType = $request->filled('add_type') && in_array($request->input('add_type'), ['sele', 'buy'])
+            ? $request->input('add_type')
+            : '';
+        $productsQuery = Product::orderBy($sortBy, $sortOrder);
+        if (!empty($search)) {
+            $productsQuery->where(function ($query) use ($search) {
+                $query->where('name', 'like', "%$search%")
+                    ->orWhere('title', 'like', "%$search%");
+            });
+        }
+        if (!empty($addType)) {
+            $productsQuery->where('add_type', $addType);
+        }
+        $products = $productsQuery->paginate($perPage);
         return new ProductCollection($products);
     }
+
 
 
     /**

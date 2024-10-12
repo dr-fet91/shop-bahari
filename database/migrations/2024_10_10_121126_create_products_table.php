@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('title')->nullable()->unique();
             $table->string('image')->nullable();
             $table->string('price');
+            $table->enum('add_type', ['sele', 'buy']);
             $table->timestamps();
         });
     }

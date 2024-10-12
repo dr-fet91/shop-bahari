@@ -21,6 +21,9 @@ class ProductFactory extends Factory
             'title' => $this->faker->unique()->sentence(3),
             'image' => $this->faker->imageUrl(640, 480, 'shop'),
             'price' => $this->faker->randomFloat(2, 10000, 10000000),
+            'add_type' => $this->faker->randomElement(['sele', 'buy']),
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
     }
 }
